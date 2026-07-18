@@ -1,0 +1,45 @@
+{
+  "generated_pages": [
+    "news.html",
+    "events.html",
+    "campaigning.html",
+    "learning.html",
+    "insight-zone.html",
+    "team.html",
+    "shop.html",
+    "start.html",
+    "mtb.html",
+    "volunteer.html",
+    "membership.html",
+    "results.html",
+    "rankings.html",
+    "benefits.html",
+    "clubs.html",
+    "officials.html",
+    "cyclocross.html",
+    "rides.html",
+    "coaches.html",
+    "championships.html",
+    "renew.html",
+    "partners.html",
+    "teams.html"
+  ],
+  "count": 23,
+  "manifest_page_codes_used": [
+    "ABOUT",
+    "ATHLETES",
+    "EVENTS",
+    "GALLERY",
+    "GLOBAL",
+    "HOME",
+    "NEWS",
+    "TEAMS"
+  ],
+  "known_image_filename_issue": "The filesystem tree contains _001 suffixes while the manifest and generated HTML use clean semantic filenames.",
+  "theme": {
+    "black": "#0c0c0c",
+    "red": "#c51f30",
+    "green": "#176b45",
+    "off_white": "#f4f4f2"
+  }
+}
