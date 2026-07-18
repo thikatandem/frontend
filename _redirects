@@ -1,0 +1,55 @@
+# Canonical homepage
+/index.html / 301!
+/index / 301!
+
+# Canonical HTTPS apex domain
+http://thikatandemclub.com/* https://thikatandemclub.com/:splat 301!
+http://www.thikatandemclub.com/* https://thikatandemclub.com/:splat 301!
+https://www.thikatandemclub.com/* https://thikatandemclub.com/:splat 301!
+
+# Redirect legacy .html URLs to clean canonical URLs
+/benefits.html /benefits 301!
+/campaigning.html /campaigning 301!
+/championships.html /championships 301!
+/clubs.html /clubs 301!
+/coaches.html /coaches 301!
+/cyclocross.html /cyclocross 301!
+/events.html /events 301!
+/insight-zone.html /insight-zone 301!
+/learning.html /learning 301!
+/membership.html /membership 301!
+/news.html /news 301!
+/officials.html /officials 301!
+/partners.html /partners 301!
+/rankings.html /rankings 301!
+/results.html /results 301!
+/rides.html /rides 301!
+/shop.html /shop 301!
+/team.html /team 301!
+/teams.html /teams 301!
+
+# Serve clean URLs from existing static HTML files
+/benefits /benefits.html 200
+/campaigning /campaigning.html 200
+/championships /championships.html 200
+/clubs /clubs.html 200
+/coaches /coaches.html 200
+/cyclocross /cyclocross.html 200
+/events /events.html 200
+/insight-zone /insight-zone.html 200
+/learning /learning.html 200
+/membership /membership.html 200
+/news /news.html 200
+/officials /officials.html 200
+/partners /partners.html 200
+/rankings /rankings.html 200
+/results /results.html 200
+/rides /rides.html 200
+/shop /shop.html 200
+/team /team.html 200
+/teams /teams.html 200
+
+# Discovery files
+/robots.txt /robots.txt 200
+/sitemap.xml /sitemap.xml 200
+/manifest.webmanifest /manifest.webmanifest 200

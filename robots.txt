@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://thikatandemclub.com/sitemap.xml
+Host: thikatandemclub.com

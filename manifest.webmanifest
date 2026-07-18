@@ -1,0 +1,33 @@
+{
+  "name": "Thika Tandem ParaCycling Club",
+  "short_name": "Thika Tandem",
+  "description": "Thika Tandem ParaCycling Club advances inclusive cycling and para-cycling in Kenya through tandem riding, athlete development, training, racing and community participation.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#c51f30",
+  "lang": "en-KE",
+  "dir": "ltr",
+  "categories": [
+    "sports",
+    "health",
+    "education",
+    "social"
+  ],
+  "icons": [
+    {
+      "src": "/assets/img/brand/favicon/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/img/brand/favicon/favicon-master-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
