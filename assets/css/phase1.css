@@ -660,7 +660,7 @@ img{max-width:100%}
 .tt-footer-main{padding-block:76px 68px}
 .tt-footer-layout{display:grid;grid-template-columns:1.35fr .65fr .78fr .72fr 1.25fr;gap:clamp(30px,3.5vw,62px);align-items:start}
 .tt-footer-logo{display:inline-flex;align-items:center;gap:14px;color:#fff;text-decoration:none}
-.tt-footer-logo img{width:auto;height:66px;object-fit:contain}
+.tt-footer-identity>img{height:64px!important;width:auto!important;max-height:34px!important;}
 .tt-footer-logo span{display:flex;flex-direction:column;line-height:1}
 .tt-footer-logo strong{font-family:var(--tt-display);font-size:1.18rem;font-weight:800;letter-spacing:-.03em}
 .tt-footer-logo small{margin-top:6px;color:#e25260;font-size:.66rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
