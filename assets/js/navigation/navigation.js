@@ -93,9 +93,19 @@ function renderHeaderCTA() {
   if (!container) return;
 
   container.innerHTML = `
+    <a
+      class="tt-header-contact"
+      href="/contact.html"
+      aria-label="Contact Thika Tandem"
+    >
+      <i class="bi bi-chat-dots" aria-hidden="true"></i>
+      <span>Contact Us</span>
+    </a>
+
     <a class="tt-header-cta" href="#join">
       Join the club
-    </a>`;
+    </a>
+  `;
 }
 
 function renderCampaignBar(campaign) {

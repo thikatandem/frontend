@@ -6,6 +6,7 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#c51f30",
   "lang": "en-KE",
@@ -28,6 +29,32 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "About Thika Tandem",
+      "short_name": "About",
+      "description": "Learn about Thika Tandem ParaCycling Club",
+      "url": "/about"
+    },
+    {
+      "name": "Our Athletes",
+      "short_name": "Athletes",
+      "description": "Meet Thika Tandem athletes and riders",
+      "url": "/athletes"
+    },
+    {
+      "name": "Tours and Rides",
+      "short_name": "Tours",
+      "description": "Explore Thika Tandem tours and rides",
+      "url": "/tour"
+    },
+    {
+      "name": "Contact Us",
+      "short_name": "Contact",
+      "description": "Contact Thika Tandem ParaCycling Club",
+      "url": "/contact"
     }
   ]
 }
