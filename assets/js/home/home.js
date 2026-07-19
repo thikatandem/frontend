@@ -1,4 +1,3 @@
-import { initializeNavigation } from '../navigation/navigation.js';
 import { loadFeaturedStory } from '../hero/heroFeaturedStory.js';
 import { loadStoryGrid } from '../hero/heroStoryGrid.js';
 import { loadNewsRail } from './newsRail.js';
@@ -6,7 +5,6 @@ import { initializePhase2 } from './phase2.js';
 
 export async function initializeHome() {
   const results = await Promise.allSettled([
-    initializeNavigation(),
     loadFeaturedStory(),
     loadStoryGrid(),
     loadNewsRail(),

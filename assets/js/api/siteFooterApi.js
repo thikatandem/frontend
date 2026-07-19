@@ -1,20 +1,5 @@
 import db from '../supabase/supabaseClient.js';
 
-export async function getPublicSiteSettings() {
-  const { data, error } = await db
-    .from('site_settings')
-    .select('setting_code, setting_value, display_label, display_order')
-    .eq('is_public', true)
-    .order('display_order', { ascending: true });
-
-  if (error) {
-    console.error('Public site settings error:', error);
-    return [];
-  }
-
-  return data || [];
-}
-
 export async function getPublicSocialLinks() {
   const { data, error } = await db
     .from('navigation_social_links')

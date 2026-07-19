@@ -41,8 +41,7 @@ export async function getNavigationCTAs() {
     .from('navigation_cta_links')
     .select('*')
     .eq('is_active', true)
-    .order('display_order', { ascending: true })
-    .limit(1);
+    .order('display_order', { ascending: true });
 
   if (error) {
     console.error('Navigation CTA error:', error);

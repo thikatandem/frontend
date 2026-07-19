@@ -10,6 +10,7 @@ import {
 } from '../utils/renderUtils.js';
 
 let navigationEventsBound = false;
+let navigationInitializationPromise = null;
 
 /**
  * Prevent private account links from appearing in public navigation.
@@ -36,34 +37,6 @@ function isPublicNavigationItem(item) {
   return !isLoginLabel && !isLoginUrl;
 }
 
-/**
- * Recognise every possible Home entry so database Home links can be
- * removed before the single permanent Home link is inserted.
- */
-function isHomeNavigationItem(item) {
-  const label = String(
-    item?.title || item?.label || ''
-  )
-    .trim()
-    .toLowerCase();
-
-  const rawUrl = String(item?.url || '')
-    .trim()
-    .toLowerCase();
-
-  const normalizedUrl = rawUrl
-    .replace(/^https?:\/\/[^/]+/i, '')
-    .replace(/[?#].*$/, '')
-    .replace(/\/+$/, '') || '/';
-
-  return (
-    label === 'home' ||
-    normalizedUrl === '/' ||
-    normalizedUrl === '/index' ||
-    normalizedUrl === '/index.html'
-  );
-}
-
 function sortByDisplayOrder(items) {
   return [...items].sort((a, b) => {
     return (
@@ -73,21 +46,24 @@ function sortByDisplayOrder(items) {
   });
 }
 
-export async function initializeNavigation() {
+export function initializeNavigation() {
+  document.body?.classList.remove('tt-mobile-nav-open', 'mobile-nav-active');
+
+  if (navigationInitializationPromise) {
+    return navigationInitializationPromise;
+  }
+
+  navigationInitializationPromise = (async () => {
   try {
     const [
       mainItems,
       utilityItems,
-      campaigns
+      campaigns,
+      ctas
     ] = await Promise.all([
       getNavigationRegionItems('MAIN'),
       getNavigationRegionItems('UTILITY'),
       getNavigationCampaigns(),
-
-      /*
-       * Keep the service request available to the application,
-       * but do not use a database CTA to replace Join the club.
-       */
       getNavigationCTAs()
     ]);
 
@@ -109,11 +85,7 @@ export async function initializeNavigation() {
         : null
     );
 
-    /*
-     * Join the club is intentionally fixed and cannot become Login.
-     */
-    renderHeaderCTA();
-
+    renderHeaderCTAs(Array.isArray(ctas) ? ctas : []);
     bindNavigationEvents();
   } catch (error) {
     console.error(
@@ -121,22 +93,21 @@ export async function initializeNavigation() {
       error
     );
 
-    /*
-     * Still render the permanent buttons when database navigation
-     * is temporarily unavailable.
-     */
     renderUtilityNavigation([]);
     renderMainNavigation([]);
-    renderHeaderCTA();
+    renderHeaderCTAs([]);
     bindNavigationEvents();
   }
+  })().catch((error) => {
+    navigationInitializationPromise = null;
+    throw error;
+  });
+
+  return navigationInitializationPromise;
 }
 
 /**
- * Utility navigation:
- * - Home is always first.
- * - Database Home duplicates are removed.
- * - Login entries are removed.
+ * Utility navigation is rendered only from database records.
  */
 function renderUtilityNavigation(items) {
   const desktop = document.getElementById(
@@ -151,21 +122,12 @@ function renderUtilityNavigation(items) {
     items.filter((item) => {
       return (
         !item?.parent_item_id &&
-        isPublicNavigationItem(item) &&
-        !isHomeNavigationItem(item)
+        isPublicNavigationItem(item)
       );
     })
   );
 
-  const homeItem = `
-    <li>
-      <a href="/" aria-label="Home">
-        Home
-      </a>
-    </li>
-  `;
-
-  const databaseItems = rootItems
+  const markup = rootItems
     .map((item) => {
       const title =
         item?.title ||
@@ -182,8 +144,6 @@ function renderUtilityNavigation(items) {
     })
     .join('');
 
-  const markup = homeItem + databaseItems;
-
   if (desktop) {
     desktop.innerHTML = markup;
   }
@@ -193,32 +153,20 @@ function renderUtilityNavigation(items) {
   }
 }
 
+/**
+ * Main navigation, including Home, is rendered only from database records.
+ */
 function renderMainNavigation(items) {
-  const container = document.getElementById(
-    'mainNavigationList'
-  );
+  const container = document.getElementById('mainNavigationList');
+  if (!container) return;
 
-  if (!container) {
-    return;
-  }
-
-  const publicItems = items.filter(
-    isPublicNavigationItem
-  );
-
+  const publicItems = items.filter(isPublicNavigationItem);
   const roots = sortByDisplayOrder(
-    publicItems.filter((item) => {
-      return !item?.parent_item_id;
-    })
+    publicItems.filter((item) => !item?.parent_item_id)
   );
 
   container.innerHTML = roots
-    .map((item) => {
-      return buildNavigationItem(
-        item,
-        publicItems
-      );
-    })
+    .map((item) => buildNavigationItem(item, publicItems))
     .join('');
 }
 
@@ -346,39 +294,43 @@ function buildNavigationItem(item, allItems) {
  * These two public buttons are deliberately fixed.
  * Database CTA content cannot replace Join the club with Login.
  */
-function renderHeaderCTA() {
-  const container = document.getElementById(
-    'headerCtaContainer'
-  );
+function renderHeaderCTAs(items) {
+  const container = document.getElementById('headerCtaContainer');
+  if (!container) return;
 
-  if (!container) {
-    return;
-  }
+  const publicItems = sortByDisplayOrder(
+    (Array.isArray(items) ? items : []).filter((item) => {
+      const title = String(item?.title || '').trim();
+      const url = String(item?.url || '').trim();
 
-  container.innerHTML = `
-    <a
-      class="tt-header-contact"
-      href="/contact"
-      aria-label="Contact Thika Tandem"
-    >
-      <i
-        class="bi bi-chat-dots"
-        aria-hidden="true"
-      ></i>
+      return (
+        title &&
+        url &&
+        isPublicNavigationItem(item)
+      );
+    })
+  ).slice(0, 2);
 
-      <span>
-        Contact Us
-      </span>
-    </a>
+  container.innerHTML = publicItems
+    .map((item, index) => {
+      const title = item?.title || '';
+      const href = safeUrl(item?.url || '#');
+      const style = String(item?.button_style || '').trim().toLowerCase();
 
-    <a
-      class="tt-header-cta"
-      href="#join"
-      aria-label="Join Thika Tandem ParaCycling Club"
-    >
-      Join the club
-    </a>
-  `;
+      const className =
+        style === 'contact' || /contact/i.test(title)
+          ? 'tt-header-contact'
+          : index === 0
+            ? 'tt-header-contact'
+            : 'tt-header-cta';
+
+      return `
+        <a class="${className}" href="${href}">
+          ${escapeHtml(title)}
+        </a>
+      `;
+    })
+    .join('');
 }
 
 function renderCampaignBar(campaign) {
@@ -474,74 +426,116 @@ function renderCampaignBar(campaign) {
 }
 
 function bindNavigationEvents() {
+  const body = document.body;
+  const nav = document.getElementById('navmenu');
+  const mobileToggle = document.getElementById('mobileNavToggle');
+  const mobileBackdrop = document.querySelector('.tt-mobile-backdrop');
+  const searchOpen = document.getElementById('headerSearchButton');
+  const searchClose = document.getElementById('headerSearchClose');
+  const searchPanel = document.getElementById('headerSearchPanel');
+  const searchBackdrop = document.querySelector('.tt-search-backdrop');
+  const desktopMediaQuery = window.matchMedia('(min-width: 1200px)');
+
+  if (!body || !nav || !mobileToggle) {
+    console.error('Navigation elements missing:', {
+      body: Boolean(body),
+      nav: Boolean(nav),
+      mobileToggle: Boolean(mobileToggle)
+    });
+
+    navigationEventsBound = false;
+    return;
+  }
+
   if (navigationEventsBound) {
     return;
   }
 
   navigationEventsBound = true;
 
-  const body = document.body;
-
-  const nav = document.getElementById(
-    'navmenu'
-  );
-
-  const mobileToggle = document.getElementById(
-    'mobileNavToggle'
-  );
-
-  const searchOpen = document.getElementById(
-    'headerSearchButton'
-  );
-
-  const searchClose = document.getElementById(
-    'headerSearchClose'
-  );
-
-  const searchPanel = document.getElementById(
-    'headerSearchPanel'
-  );
-
-  const mobileBackdrop = document.querySelector(
-    '.tt-mobile-backdrop'
-  );
-
-  const searchBackdrop = document.querySelector(
-    '.tt-search-backdrop'
-  );
-
-  const desktopMediaQuery = window.matchMedia(
-    '(min-width: 1200px)'
-  );
-
   let previouslyFocusedElement = null;
 
-  function closeAllDropdowns(except = null) {
-    document
-      .querySelectorAll(
-        '.tt-nav-item--dropdown.is-open'
-      )
-      .forEach((item) => {
-        if (item === except) {
-          return;
-        }
-
-        item.classList.remove('is-open');
-
-        item
-          .querySelector('.tt-dropdown-toggle')
-          ?.setAttribute(
-            'aria-expanded',
-            'false'
-          );
-      });
+  function getDropdownItems() {
+    return nav.querySelectorAll(
+      '.tt-nav-item--dropdown'
+    );
   }
 
-  function setMobileToggleState(open) {
-    if (!mobileToggle) {
+  function getDirectChild(item, selector) {
+    return Array.from(item.children).find((child) => {
+      return child.matches(selector);
+    }) || null;
+  }
+
+  function closeDropdown(item) {
+    if (!item) {
       return;
     }
 
+    item.classList.remove('is-open');
+
+    const toggle = getDirectChild(
+      item,
+      '.tt-dropdown-toggle'
+    );
+
+    toggle?.setAttribute(
+      'aria-expanded',
+      'false'
+    );
+
+    const menu = getDirectChild(
+      item,
+      '.tt-mega-menu'
+    );
+
+    if (menu) {
+      menu.setAttribute(
+        'aria-hidden',
+        'true'
+      );
+    }
+  }
+
+  function openDropdown(item) {
+    if (!item) {
+      return;
+    }
+
+    item.classList.add('is-open');
+
+    const toggle = getDirectChild(
+      item,
+      '.tt-dropdown-toggle'
+    );
+
+    toggle?.setAttribute(
+      'aria-expanded',
+      'true'
+    );
+
+    const menu = getDirectChild(
+      item,
+      '.tt-mega-menu'
+    );
+
+    if (menu) {
+      menu.setAttribute(
+        'aria-hidden',
+        'false'
+      );
+    }
+  }
+
+  function closeAllDropdowns(except = null) {
+    getDropdownItems().forEach((item) => {
+      if (item !== except) {
+        closeDropdown(item);
+      }
+    });
+  }
+
+  function setMobileToggleState(open) {
     mobileToggle.setAttribute(
       'aria-expanded',
       String(open)
@@ -572,10 +566,6 @@ function bindNavigationEvents() {
   }
 
   function openMobileNavigation() {
-    if (!nav || !mobileToggle) {
-      return;
-    }
-
     previouslyFocusedElement =
       document.activeElement;
 
@@ -583,22 +573,25 @@ function bindNavigationEvents() {
       'tt-mobile-nav-open'
     );
 
+    nav.setAttribute(
+      'aria-hidden',
+      'false'
+    );
+
     setMobileToggleState(true);
 
     window.requestAnimationFrame(() => {
-      nav
-        .querySelector(
-          'a[href], button:not([disabled])'
-        )
-        ?.focus();
+      const firstControl = nav.querySelector(
+        '.tt-nav-link, .tt-mobile-utility a'
+      );
+
+      firstControl?.focus();
     });
   }
 
-  function closeMobileNavigation(options = {}) {
-    const {
-      restoreFocus = false
-    } = options;
-
+  function closeMobileNavigation({
+    restoreFocus = false
+  } = {}) {
     const wasOpen = body.classList.contains(
       'tt-mobile-nav-open'
     );
@@ -607,16 +600,36 @@ function bindNavigationEvents() {
       'tt-mobile-nav-open'
     );
 
+    nav.setAttribute(
+      'aria-hidden',
+      desktopMediaQuery.matches
+        ? 'false'
+        : 'true'
+    );
+
     setMobileToggleState(false);
     closeAllDropdowns();
 
-    if (wasOpen && restoreFocus) {
-      const focusTarget =
-        previouslyFocusedElement instanceof HTMLElement
-          ? previouslyFocusedElement
-          : mobileToggle;
+    if (
+      wasOpen &&
+      restoreFocus &&
+      previouslyFocusedElement instanceof HTMLElement
+    ) {
+      previouslyFocusedElement.focus();
+    }
+  }
 
-      focusTarget?.focus();
+  function toggleMobileNavigation() {
+    const isOpen = body.classList.contains(
+      'tt-mobile-nav-open'
+    );
+
+    if (isOpen) {
+      closeMobileNavigation({
+        restoreFocus: true
+      });
+    } else {
+      openMobileNavigation();
     }
   }
 
@@ -641,7 +654,7 @@ function bindNavigationEvents() {
     window.requestAnimationFrame(() => {
       searchPanel
         .querySelector(
-          'input, button, [href]'
+          'input, button, a[href]'
         )
         ?.focus();
     });
@@ -664,41 +677,62 @@ function bindNavigationEvents() {
     );
   }
 
-  if (mobileToggle) {
-    mobileToggle.setAttribute(
-      'aria-controls',
-      nav?.id || 'navmenu'
+  mobileToggle.setAttribute(
+    'aria-controls',
+    nav.id || 'navmenu'
+  );
+
+  setMobileToggleState(false);
+
+  getDropdownItems().forEach((item) => {
+    closeDropdown(item);
+  });
+
+  if (!desktopMediaQuery.matches) {
+    nav.setAttribute(
+      'aria-hidden',
+      'true'
     );
-
-    setMobileToggleState(false);
-
-    mobileToggle.addEventListener(
-      'click',
-      () => {
-        const isOpen = body.classList.contains(
-          'tt-mobile-nav-open'
-        );
-
-        if (isOpen) {
-          closeMobileNavigation({
-            restoreFocus: true
-          });
-        } else {
-          openMobileNavigation();
-        }
-      }
+  } else {
+    nav.setAttribute(
+      'aria-hidden',
+      'false'
     );
   }
 
-  nav?.addEventListener(
+  mobileToggle.addEventListener(
     'click',
     (event) => {
-      const toggle = event.target.closest(
+      event.preventDefault();
+      event.stopPropagation();
+      toggleMobileNavigation();
+    }
+  );
+
+  nav.addEventListener(
+    'click',
+    (event) => {
+      const target =
+        event.target instanceof Element
+          ? event.target
+          : event.target?.parentElement;
+
+      if (!target) {
+        return;
+      }
+
+      const dropdownToggle = target.closest(
         '.tt-dropdown-toggle'
       );
 
-      if (toggle) {
-        const item = toggle.closest(
+      if (
+        dropdownToggle &&
+        nav.contains(dropdownToggle)
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const item = dropdownToggle.closest(
           '.tt-nav-item--dropdown'
         );
 
@@ -706,43 +740,74 @@ function bindNavigationEvents() {
           return;
         }
 
-        const opening =
+        const shouldOpen =
           !item.classList.contains('is-open');
 
         closeAllDropdowns(item);
 
-        item.classList.toggle(
-          'is-open',
-          opening
-        );
-
-        toggle.setAttribute(
-          'aria-expanded',
-          String(opening)
-        );
+        if (shouldOpen) {
+          openDropdown(item);
+        } else {
+          closeDropdown(item);
+        }
 
         return;
       }
 
-      const clickedLink =
-        event.target.closest('a[href]');
+      const link = target.closest('a[href]');
+
+      if (!link || !nav.contains(link)) {
+        return;
+      }
+
+      const href = link.getAttribute('href');
 
       if (
-        clickedLink &&
-        !desktopMediaQuery.matches
+        !href ||
+        href === '#' ||
+        href.trim().toLowerCase().startsWith('javascript:')
       ) {
+        event.preventDefault();
+        return;
+      }
+
+      if (!desktopMediaQuery.matches) {
         closeMobileNavigation();
       }
+    }
+  );
+
+  mobileBackdrop?.addEventListener(
+    'click',
+    (event) => {
+      event.preventDefault();
+
+      closeMobileNavigation({
+        restoreFocus: true
+      });
     }
   );
 
   document.addEventListener(
     'click',
     (event) => {
+      const target =
+        event.target instanceof Element
+          ? event.target
+          : event.target?.parentElement;
+
+      if (!target) {
+        return;
+      }
+
       if (
-        !event.target.closest('#navmenu') &&
-        !event.target.closest('#mobileNavToggle')
+        nav.contains(target) ||
+        mobileToggle.contains(target)
       ) {
+        return;
+      }
+
+      if (desktopMediaQuery.matches) {
         closeAllDropdowns();
       }
     }
@@ -755,33 +820,47 @@ function bindNavigationEvents() {
         return;
       }
 
+      if (
+        body.classList.contains(
+          'tt-search-open'
+        )
+      ) {
+        closeSearch();
+        searchOpen?.focus();
+        return;
+      }
+
+      if (
+        body.classList.contains(
+          'tt-mobile-nav-open'
+        )
+      ) {
+        closeMobileNavigation({
+          restoreFocus: true
+        });
+
+        return;
+      }
+
       closeAllDropdowns();
-
-      closeMobileNavigation({
-        restoreFocus: true
-      });
-
-      closeSearch();
-    }
-  );
-
-  mobileBackdrop?.addEventListener(
-    'click',
-    () => {
-      closeMobileNavigation({
-        restoreFocus: true
-      });
     }
   );
 
   searchOpen?.addEventListener(
     'click',
-    openSearch
+    (event) => {
+      event.preventDefault();
+      openSearch();
+    }
   );
 
   searchClose?.addEventListener(
     'click',
-    closeSearch
+    (event) => {
+      event.preventDefault();
+      closeSearch();
+      searchOpen?.focus();
+    }
   );
 
   searchBackdrop?.addEventListener(
@@ -814,11 +893,30 @@ function bindNavigationEvents() {
       }
     );
 
-  const handleDesktopChange = (event) => {
+  function handleDesktopChange(event) {
     if (event.matches) {
-      closeMobileNavigation();
+      body.classList.remove(
+        'tt-mobile-nav-open'
+      );
+
+      nav.setAttribute(
+        'aria-hidden',
+        'false'
+      );
+
+      setMobileToggleState(false);
+      closeAllDropdowns();
+    } else {
+      nav.setAttribute(
+        'aria-hidden',
+        body.classList.contains(
+          'tt-mobile-nav-open'
+        )
+          ? 'false'
+          : 'true'
+      );
     }
-  };
+  }
 
   if (
     typeof desktopMediaQuery.addEventListener ===
@@ -828,10 +926,7 @@ function bindNavigationEvents() {
       'change',
       handleDesktopChange
     );
-  } else if (
-    typeof desktopMediaQuery.addListener ===
-    'function'
-  ) {
+  } else {
     desktopMediaQuery.addListener(
       handleDesktopChange
     );

@@ -1,5 +1,4 @@
-import { supabase } from '../supabase/supabaseClient.js';
-import { initializeNavigation } from '../navigation/navigation.js';
+import supabase from '../supabase/supabaseClient.js';
 
 const escapeHtml = (value = '') => String(value).replace(/[&<>"']/g, (character) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
@@ -51,7 +50,20 @@ async function loadPageContent() {
   }
 }
 
-Promise.allSettled([initializeNavigation(), loadPageContent()])
-  .then((results) => results.forEach((result) => {
-    if (result.status === 'rejected') console.error(result.reason);
-  }));
+async function initializePage() {
+  const results = await Promise.allSettled([
+    loadPageContent()
+  ]);
+
+  results.forEach((result) => {
+    if (result.status === 'rejected') {
+      console.error('Page component failed:', result.reason);
+    }
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializePage, { once: true });
+} else {
+  initializePage();
+}
