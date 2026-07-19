@@ -1,27 +1,41 @@
 ﻿:root {
-  --tt-black: #0c0c0c;
-  --tt-charcoal: #202020;
-  --tt-white: #fff;
+  --tt-black: #101010;
+  --tt-charcoal: #222222;
+  --tt-white: #ffffff;
   --tt-off-white: #f4f4f2;
-  --tt-grey: #6b6b6b;
-  --tt-border: #dedede;
-  --tt-red: #c51f30;
+  --tt-grey: #777777;
+  --tt-border: #d9d9d9;
+  --tt-red: #bb1e2d;
+  --tt-red-dark: #941521;
   --tt-green: #176b45;
+  --tt-accent: #e4b623;
   --tt-max: 1360px;
+  --tt-container: 1440px;
   --tt-header-height: 84px;
+  --tt-display: "Poppins", sans-serif;
+  --tt-body: "Source Sans 3", "Source Sans Pro", sans-serif;
+  --space-1: .5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 3rem;
+  --space-6: 4.5rem;
+  --space-7: 6rem;
+  --tt-radius-sm: 2px;
+  --tt-shadow-soft: 0 18px 45px rgba(16,16,16,.10);
+  --tt-transition: 180ms ease;
 }
 
-body { background: var(--tt-white); color: var(--tt-black); font-family: "Source Sans 3", "Source Sans Pro", sans-serif; }
 body.tt-mobile-nav-open, body.tt-search-open { overflow: hidden; }
 
 .tt-header { position: sticky; top: 0; z-index: 1000; background: var(--tt-white); box-shadow: 0 1px 0 rgba(0,0,0,.09); }
 /* ---------- Utility Navigation ---------- */
 .tt-utility-bar{background:#0c0c0c;height:42px;overflow:hidden;}
-.tt-utility-inner{display:flex;align-items:center;justify-content:center;height:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;}
+.tt-utility-inner{display:flex;align-items:center;justify-content:flex-start;height:100%;padding-inline:12px;box-sizing:border-box;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;scroll-padding-inline:12px;}
 .tt-utility-inner::-webkit-scrollbar{display:none;}
-.tt-utility-list{display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:28px;padding:0;margin:0;list-style:none;white-space:nowrap;min-width:max-content;}
+.tt-utility-list{display:flex;flex:1 0 max-content;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:clamp(14px,1.35vw,22px);padding:0;margin:0;list-style:none;white-space:nowrap;min-width:max-content;}
 .tt-utility-list li{flex:0 0 auto;}
-.tt-utility-list a{display:block;white-space:nowrap;font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--tt-red);}
+.tt-utility-list a{display:block;white-space:nowrap;font-size:clamp(.67rem,.72vw,.76rem);font-weight:700;letter-spacing:.025em;text-transform:uppercase;color:var(--tt-red);}
 .tt-utility-list a:hover{color:#fff;}
 
 .tt-main-bar { background: #fff; }
@@ -616,39 +630,22 @@ body.tt-mobile-nav-open, body.tt-search-open { overflow: hidden; }
    THIKA TANDEM DESIGN SYSTEM + SITE FOOTER
    Append this entire block to assets/css/phase1.css
 ========================================================= */
-:root {
-  --tt-black: #101010;
-  --tt-charcoal: #222222;
-  --tt-white: #ffffff;
-  --tt-off-white: #f4f4f2;
-  --tt-grey: #777777;
-  --tt-border: #d9d9d9;
-  --tt-red: #bb1e2d;
-  --tt-red-dark: #941521;
-  --tt-green: #176b45;
-  --tt-accent: #e4b623;
-  --tt-display: "Poppins", sans-serif;
-  --tt-body: "Source Sans 3", sans-serif;
-  --space-1: .5rem;
-  --space-2: 1rem;
-  --space-3: 1.5rem;
-  --space-4: 2rem;
-  --space-5: 3rem;
-  --space-6: 4.5rem;
-  --space-7: 6rem;
-  --tt-container: 1440px;
-  --tt-radius-sm: 2px;
-  --tt-shadow-soft: 0 18px 45px rgba(16,16,16,.10);
-  --tt-transition: 180ms ease;
-}
 html{scroll-behavior:smooth}
 body{font-family:var(--tt-body);font-size:1rem;line-height:1.6;color:var(--tt-black);background:var(--tt-white);text-rendering:optimizeLegibility}
 h1,h2,h3,h4,h5,h6{font-family:var(--tt-display);letter-spacing:-.03em}
 a{transition:color var(--tt-transition),background var(--tt-transition),border-color var(--tt-transition),transform var(--tt-transition)}
 img{max-width:100%}
 :focus-visible{outline:3px solid var(--tt-accent);outline-offset:4px}
-.tt-container{width:min(calc(100% - 40px),var(--tt-container));margin-inline:auto}
-.tt-section-shell,.tt-home-shell,.tt-header-inner,.tt-utility-inner,.tt-campaign-inner{width:min(calc(100% - 40px),var(--tt-container))}
+.tt-container,
+.tt-section-shell,
+.tt-home-shell,
+.tt-header-inner,
+.tt-utility-inner,
+.tt-campaign-inner{
+  width:min(calc(100% - 40px),var(--tt-container));
+  max-width:var(--tt-container);
+  margin-inline:auto;
+}
 .tt-p2-section,.tt-news-section{padding-block:var(--space-7)}
 .tt-section-heading h2,.tt-p2-heading h2{text-transform:uppercase;font-weight:800;letter-spacing:-.045em}
 .tt-news-card__media{aspect-ratio:4/3}
@@ -700,7 +697,17 @@ img{max-width:100%}
 .tt-footer-bottom a,.tt-footer-bottom p{margin:0;color:rgba(255,255,255,.5);font-size:.78rem;text-decoration:none}
 .tt-footer-bottom a:hover{color:#fff}
 @media(max-width:1199px){.tt-footer-layout{grid-template-columns:1.2fr repeat(3,.7fr);}.tt-footer-newsletter{grid-column:1/-1;max-width:650px}.tt-footer-main{padding-block:64px}}
-@media(max-width:767px){.tt-container,.tt-section-shell,.tt-home-shell,.tt-header-inner,.tt-utility-inner,.tt-campaign-inner{width:min(calc(100% - 24px),var(--tt-container))}.tt-p2-section,.tt-news-section{padding-block:var(--space-6)}.tt-footer-layout{grid-template-columns:1fr 1fr;gap:40px 28px}.tt-footer-identity,.tt-footer-newsletter{grid-column:1/-1}.tt-footer-main{padding-block:52px}.tt-footer-bottom__inner{padding-block:21px;align-items:flex-start;flex-direction:column}.tt-footer-bottom nav{gap:12px 18px}}
+@media(max-width:767px){
+  .tt-container,
+  .tt-section-shell,
+  .tt-home-shell,
+  .tt-header-inner,
+  .tt-utility-inner,
+  .tt-campaign-inner{
+    width:min(calc(100% - 24px),var(--tt-container));
+    max-width:var(--tt-container);
+    margin-inline:auto;
+  }.tt-p2-section,.tt-news-section{padding-block:var(--space-6)}.tt-footer-layout{grid-template-columns:1fr 1fr;gap:40px 28px}.tt-footer-identity,.tt-footer-newsletter{grid-column:1/-1}.tt-footer-main{padding-block:52px}.tt-footer-bottom__inner{padding-block:21px;align-items:flex-start;flex-direction:column}.tt-footer-bottom nav{gap:12px 18px}}
 @media(max-width:479px){.tt-footer-layout{grid-template-columns:1fr}.tt-footer-identity,.tt-footer-newsletter{grid-column:auto}.tt-footer-newsletter-control{grid-template-columns:1fr}.tt-footer-newsletter-control button{min-height:46px;justify-content:center}.tt-footer-column{padding-top:4px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.tt-site-footer *{transition:none!important}}
 

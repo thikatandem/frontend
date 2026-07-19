@@ -34,8 +34,13 @@ function renderUtilityNavigation(items) {
   const mobile = document.getElementById('mobileUtilityNavigationList');
   const rootItems = items.filter((item) => !item.parent_item_id && isPublicNavigationItem(item));
 
-  const markup = rootItems.map((item) => `
-    <li><a href="${safeUrl(item.url || '#')}">${escapeHtml(item.title)}</a></li>`).join('');
+  const homeItem = `
+<li><a href="index.html">Home</a></li>
+`;
+
+const markup = homeItem + rootItems.map((item) => `
+    <li><a href="${safeUrl(item.url || '#')}">${escapeHtml(item.title)}</a></li>`
+).join('');
 
   if (desktop) desktop.innerHTML = markup;
   if (mobile) mobile.innerHTML = markup;
