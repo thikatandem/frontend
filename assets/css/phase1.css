@@ -31,11 +31,11 @@ body.tt-mobile-nav-open, body.tt-search-open { overflow: hidden; }
 .tt-header { position: sticky; top: 0; z-index: 1000; background: var(--tt-white); box-shadow: 0 1px 0 rgba(0,0,0,.09); }
 /* ---------- Utility Navigation ---------- */
 .tt-utility-bar{background:#0c0c0c;height:42px;overflow:hidden;}
-.tt-utility-inner{display:flex;align-items:center;justify-content:flex-start;height:100%;padding-inline:12px;box-sizing:border-box;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;scroll-padding-inline:12px;}
+.tt-utility-inner{display:flex;align-items:center;justify-content:center;height:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;}
 .tt-utility-inner::-webkit-scrollbar{display:none;}
-.tt-utility-list{display:flex;flex:1 0 max-content;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:clamp(14px,1.35vw,22px);padding:0;margin:0;list-style:none;white-space:nowrap;min-width:max-content;}
+.tt-utility-list{display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:28px;padding:0;margin:0;list-style:none;white-space:nowrap;min-width:max-content;}
 .tt-utility-list li{flex:0 0 auto;}
-.tt-utility-list a{display:block;white-space:nowrap;font-size:clamp(.67rem,.72vw,.76rem);font-weight:700;letter-spacing:.025em;text-transform:uppercase;color:var(--tt-red);}
+.tt-utility-list a{display:block;white-space:nowrap;font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--tt-red);}
 .tt-utility-list a:hover{color:#fff;}
 
 .tt-main-bar { background: #fff; }
@@ -939,5 +939,642 @@ img{max-width:100%}
   .tt-header-contact,
   .tt-header-cta {
     width: 100%;
+  }
+}
+/* =========================================================
+   MOBILE, TABLET & RESPONSIVE REFINEMENT — FINAL OVERRIDES
+   Keeps the existing site structure and class names intact.
+========================================================= */
+
+/* Prevent accidental horizontal overflow across all pages. */
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+main,
+section,
+article,
+aside,
+header,
+footer,
+.tt-site-main,
+.tt-page-main {
+  min-width: 0;
+}
+
+img,
+video,
+iframe,
+svg,
+canvas {
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
+/* Utility navigation: no clipped first or last item. */
+.tt-utility-inner {
+  justify-content: flex-start;
+  padding-inline: 4px;
+  scroll-padding-inline: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tt-utility-list {
+  width: max-content;
+  min-width: 100%;
+  justify-content: center;
+  gap: clamp(14px, 2vw, 28px);
+  padding-inline: 12px;
+}
+
+/* Keep the desktop header stable when available width becomes tight. */
+.tt-header-inner {
+  min-width: 0;
+}
+
+.tt-logo,
+.tt-brand-copy,
+.tt-nav,
+.tt-header-actions,
+#headerCtaContainer {
+  min-width: 0;
+}
+
+/* =========================================================
+   TABLET AND MOBILE NAVIGATION
+========================================================= */
+@media (max-width: 1199px) {
+  body.tt-mobile-nav-open {
+    overflow: hidden;
+  }
+
+  .tt-main-bar {
+    position: relative;
+    z-index: 1000;
+  }
+
+  .tt-header-inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    min-height: 70px;
+  }
+
+  .tt-logo {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .tt-logo img {
+    height: 48px;
+  }
+
+  .tt-brand-copy {
+    overflow: hidden;
+  }
+
+  .tt-brand-copy strong,
+  .tt-brand-copy small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tt-header-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 7px;
+  }
+
+  /* The hamburger is always visible above the drawer and backdrop. */
+  .tt-mobile-toggle {
+    position: relative;
+    z-index: 1102;
+    display: inline-grid !important;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    place-items: center;
+    border: 1px solid #d7d7d7;
+    border-radius: 3px;
+    background: #fff;
+    color: #111;
+    font-size: 1.35rem;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
+  }
+
+  .tt-mobile-toggle:hover,
+  .tt-mobile-toggle:focus-visible,
+  body.tt-mobile-nav-open .tt-mobile-toggle {
+    border-color: var(--tt-red);
+    background: var(--tt-red);
+    color: #fff;
+  }
+
+  /* Compact off-canvas drawer: approximately one third on tablets. */
+  .tt-nav {
+    position: fixed;
+    z-index: 1100;
+    inset: 0 0 0 auto;
+    width: clamp(300px, 36vw, 430px);
+    max-width: calc(100vw - 44px);
+    height: 100dvh;
+    padding: 78px 20px 28px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: #fff;
+    box-shadow: -18px 0 48px rgba(0, 0, 0, .2);
+    transform: translate3d(105%, 0, 0);
+    visibility: hidden;
+    transition: transform .28s ease, visibility .28s ease;
+  }
+
+  body.tt-mobile-nav-open .tt-nav {
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+  }
+
+  .tt-mobile-backdrop {
+    position: fixed;
+    z-index: 1090;
+    inset: 0;
+    display: block;
+    background: rgba(0, 0, 0, .55);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .25s ease, visibility .25s ease;
+  }
+
+  body.tt-mobile-nav-open .tt-mobile-backdrop {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .tt-nav-list {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .tt-nav-item {
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid #e2e2e2;
+  }
+
+  .tt-nav-link {
+    width: 100%;
+    min-height: 52px;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 3px;
+    color: #171717;
+    font-size: .8rem;
+    letter-spacing: .04em;
+    text-align: left;
+  }
+
+  .tt-nav-link::after {
+    display: none;
+  }
+
+  .tt-nav-item--dropdown > .tt-nav-link i {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #f0f0ee;
+  }
+
+  .tt-mega-menu,
+  .tt-nav-item.is-open .tt-mega-menu {
+    position: static;
+    width: 100%;
+    max-width: none;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 0 0 14px;
+    border: 0;
+    box-shadow: none;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .tt-mega-menu {
+    display: none;
+  }
+
+  .tt-nav-item.is-open .tt-mega-menu {
+    display: block;
+  }
+
+  .tt-mega-menu__intro,
+  .tt-mega-menu__feature {
+    display: none;
+  }
+
+  .tt-mega-menu__links {
+    display: block;
+  }
+
+  .tt-mega-menu__links a {
+    min-height: 44px;
+    align-items: center;
+    padding: 9px 5px 9px 14px;
+    border-bottom: 0;
+    color: #555;
+    font-size: .88rem;
+    line-height: 1.3;
+  }
+
+  .tt-mobile-utility {
+    display: block;
+    margin-top: 24px;
+    padding-top: 17px;
+    border-top: 3px solid #111;
+  }
+
+  .tt-mobile-utility ul {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .tt-mobile-utility a {
+    display: block;
+    padding: 8px 3px;
+    color: #666;
+    font-size: .82rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  /* Compact and aligned Contact / Join actions inside the drawer. */
+  #headerCtaContainer {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 0;
+  }
+
+  .tt-header-contact,
+  .tt-header-cta {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    display: inline-flex !important;
+    justify-content: center;
+    padding: 0 10px;
+    border-radius: 2px;
+    font-size: .7rem;
+    line-height: 1.15;
+    letter-spacing: .035em;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .tt-header-contact {
+    border: 1px solid #d5d5d5;
+    background: #fff;
+  }
+
+  .tt-header-contact i {
+    font-size: .92rem;
+  }
+
+  .tt-header-contact::after {
+    display: none;
+  }
+
+  /* Content grids collapse cleanly without overflow. */
+  .tt-home-shell,
+  .tt-p2-events-layout,
+  .tt-p2-intro-card,
+  .tt-p2-team-story,
+  .tt-p2-result-grid,
+  .tt-p2-join-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tt-home-shell,
+  .tt-section-shell,
+  .tt-container,
+  .tt-campaign-inner,
+  .tt-header-inner {
+    max-width: 100%;
+  }
+
+  .tt-p2-event-row,
+  .tt-footer-layout,
+  .tt-footer-newsletter-control {
+    min-width: 0;
+  }
+}
+
+/* =========================================================
+   PHONE LAYOUT
+========================================================= */
+@media (max-width: 767px) {
+  :root {
+    --tt-header-height: 66px;
+  }
+
+  .tt-container,
+  .tt-section-shell,
+  .tt-header-inner,
+  .tt-utility-inner,
+  .tt-campaign-inner {
+    width: min(calc(100% - 28px), var(--tt-container));
+    margin-inline: auto;
+  }
+
+  .tt-home-shell {
+    width: 100%;
+    margin-inline: 0;
+  }
+
+  .tt-header-inner {
+    min-height: 66px;
+    gap: 8px;
+  }
+
+  .tt-logo img {
+    height: 43px;
+  }
+
+  .tt-brand-copy strong {
+    max-width: 190px;
+    font-size: .82rem;
+  }
+
+  .tt-icon-button,
+  .tt-mobile-toggle {
+    width: 41px;
+    height: 41px;
+    flex-basis: 41px;
+  }
+
+  /* On narrow phones the drawer remains usable while staying compact. */
+  .tt-nav {
+    width: min(82vw, 340px);
+    max-width: calc(100vw - 36px);
+    padding: 72px 17px 24px;
+  }
+
+  .tt-nav-link {
+    min-height: 49px;
+    font-size: .76rem;
+  }
+
+  #headerCtaContainer {
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+
+  .tt-header-contact,
+  .tt-header-cta {
+    min-height: 40px;
+    padding-inline: 7px;
+    font-size: .64rem;
+  }
+
+  /* Make all cards and text blocks respect the viewport. */
+  .tt-featured-story__content,
+  .tt-story-card__content,
+  .tt-p2-event-feature__content,
+  .tt-p2-intro-copy,
+  .tt-p2-team-story__copy,
+  .tt-p2-join-card,
+  .tt-news-card__body {
+    max-width: 100%;
+  }
+
+  .tt-p2-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .tt-p2-heading h2,
+  .tt-section-heading h2,
+  .tt-p2-intro-copy h2,
+  .tt-p2-team-story__copy h3 {
+    overflow-wrap: anywhere;
+  }
+
+  .tt-p2-event-row {
+    grid-template-columns: 56px minmax(0, 1fr) 18px;
+    gap: 10px;
+    padding-block: 16px;
+  }
+
+  .tt-p2-event-row__main b {
+    overflow-wrap: anywhere;
+  }
+
+  .tt-p2-action-grid,
+  #homeNewsRail,
+  .tt-p2-partner-strip {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tt-p2-partner-strip {
+    border-bottom: 0;
+  }
+
+  .tt-p2-partner {
+    border-right: 0;
+    border-bottom: 1px solid var(--tt-border);
+  }
+
+  /* Redesigned mobile footer. */
+  .tt-footer-main {
+    padding-block: 44px 38px;
+  }
+
+  .tt-footer-layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 34px 22px;
+  }
+
+  .tt-footer-identity,
+  .tt-footer-newsletter {
+    grid-column: 1 / -1;
+  }
+
+  .tt-footer-logo {
+    align-items: flex-start;
+  }
+
+  .tt-footer-logo strong {
+    font-size: 1.03rem;
+  }
+
+  .tt-footer-statement {
+    max-width: 100%;
+    margin: 18px 0;
+    font-size: .92rem;
+    line-height: 1.55;
+  }
+
+  .tt-footer-contact {
+    gap: 10px;
+  }
+
+  .tt-footer-contact a {
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 9px;
+    overflow-wrap: anywhere;
+  }
+
+  .tt-footer-social {
+    margin-top: 18px;
+  }
+
+  .tt-footer-social a {
+    width: 38px;
+    height: 38px;
+  }
+
+  .tt-footer-column h2,
+  .tt-footer-newsletter h2 {
+    margin-bottom: 14px;
+  }
+
+  .tt-footer-column li + li {
+    margin-top: 9px;
+  }
+
+  .tt-footer-column a {
+    display: inline-block;
+    font-size: .88rem;
+    line-height: 1.35;
+  }
+
+  .tt-footer-newsletter {
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, .13);
+  }
+
+  .tt-footer-newsletter-control {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .tt-footer-newsletter-control input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .tt-footer-newsletter-control button {
+    min-width: 92px;
+    padding-inline: 13px;
+  }
+
+  .tt-footer-bottom__inner {
+    min-height: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding-block: 19px;
+  }
+
+  .tt-footer-bottom nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    gap: 10px 18px;
+  }
+
+  .tt-footer-bottom a,
+  .tt-footer-bottom p {
+    font-size: .74rem;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 479px) {
+  .tt-header-actions {
+    gap: 5px;
+  }
+
+  .tt-brand-copy strong {
+    max-width: 145px;
+    font-size: .76rem;
+  }
+
+  .tt-nav {
+    width: min(86vw, 320px);
+    max-width: calc(100vw - 28px);
+    padding-inline: 15px;
+  }
+
+  #headerCtaContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .tt-header-contact,
+  .tt-header-cta {
+    min-height: 39px;
+  }
+
+  .tt-footer-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .tt-footer-identity,
+  .tt-footer-newsletter {
+    grid-column: auto;
+  }
+
+  .tt-footer-column {
+    padding-top: 2px;
+  }
+
+  .tt-footer-newsletter-control {
+    grid-template-columns: 1fr;
+  }
+
+  .tt-footer-newsletter-control button {
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .tt-footer-bottom nav {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 359px) {
+  .tt-brand-copy {
+    display: none;
+  }
+
+  .tt-nav {
+    width: calc(100vw - 22px);
+    max-width: none;
   }
 }
